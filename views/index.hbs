@@ -1,0 +1,63 @@
+<h1>FOLLOW NCR OFFICE</h1>
+<p>Welcome to Gene WebSite</p>
+<div>
+	<ul id="msgContainer">
+	</ul>
+</div>
+<form>
+	<textarea id="txtMessage"></textarea><br>
+	<button id="btnSendMessage">Enter Your Message Here</button>
+</form>
+
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+
+<script>
+	var username = "{{username}}";
+	var ws = new WebSocket(`ws://192.168.1.7:3000?username=${username}`);
+	  ws.onopen = function()
+       {
+          // Web Socket is connected, send data using send()
+          
+        };
+		
+       ws.onmessage = function (evt) 
+       { 	
+
+       	try{
+       		var received_msg = JSON.parse(evt.data);
+          	console.log('Received Message:', received_msg);
+ 	        addMessage(received_msg.message, received_msg.from);	
+       	}catch(e){
+
+       	}
+          
+       };
+		
+       ws.onclose = function()
+       { 
+          // websocket is closed.
+          alert("Connection is closed..."); 
+       };
+
+
+    function addMessage(message,uname){
+    		var html = `
+				<li>${uname}: ${message}</li>
+			`;
+
+			$('#msgContainer').append(html);
+    }
+	$(function(){
+		$(document).ready(function(){
+			$('#btnSendMessage').click(function(e){
+				e.preventDefault();
+				var message = $('#txtMessage').val();
+							$('#txtMessage').val('');
+				ws.send(JSON.stringify({message}));
+			})
+		});
+	})
+</script>
